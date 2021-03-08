@@ -36,9 +36,7 @@ def countTranscriptions(
     return postsCounted, postsWithinTime, subreddits, totalPosts
 
 def checkTranscriptions(config, reddit, subsToCheck, hours, seconds, totalPosts):
-    
     while True:
-    
         totalPosts = 0
         subreddits = {}
         postsWithinTime, postsCounted = [], []
@@ -86,35 +84,37 @@ def checkTranscribers(config, hours, reddit, seconds, subsToCheck):
         for subToCheck in subsToCheck:
         
             postList = fetchPosts(reddit, subToCheck)
+            successfulPosts = []
             
             for post in postList:
                 if not valid(hours, post, seconds): break
                 else: pass
                 if satisfiesRequirements(post, subToCheck, seconds):
                     author = None
-                    if not post.link_flair_text in ["Unclaimed", "In Progress"]:
-                        if subToCheck == "transcribersofreddit":
-                            for comment in post.comments: author, authorFlairs = findAuthor(comment, authorFlairs)
-                        elif subToCheck == "tor_archive":
-                            try: author = reddit.comment(url=post.url).author
-                            except (ClientException, Forbidden, AttributeError) as e:
-                                if config["verbose"]: print(e)
-                                author = "Unknown"
-                        if author is None:
-                            for comment in post.comments:
-                                for firstReply in comment.replies:
-                                    if firstReply.author.name == "transcribersofreddit":
-                                        for secondReply in firstReply.replies:
-                                            author, authorFlairs = findAuthor(secondReply, authorFlairs)
-                        if not author is None:
-                            totalPosts += 1
-                            try:
-                                print(f" +1 transcription to {author.name}")
-                                try: transcribers[author.name] += 1
-                                except KeyError:
-                                    transcribers[author.name] = 1
-                                    authors.append(author.name)
-                            except AttributeError: print(" 1 transcription with no discernable author.")
+                    if subToCheck == "transcribersofreddit":
+                        if not reddit.submission(url=post.url).id in successfulPosts and not post.link_flair_text in ["Unclaimed", "In Progress"]:
+                            for comment in post.comments: author, authorFlairs = findAuthor(comment, authorFlairs); successfulPosts.append(post.id)
+                    elif subToCheck == "tor_archive":
+                        try: author = reddit.comment(url=post.url).author; successfulPosts.append(post.id)
+                        except (ClientException, Forbidden, AttributeError) as e:
+                            if config["verbose"]: print(e)
+                            author = "Unknown"
+                            successfulPosts.append(post.id)
+                    if author is None:
+                        for comment in post.comments:
+                            for firstReply in comment.replies:
+                                if firstReply.author.name == "transcribersofreddit":
+                                    for secondReply in firstReply.replies:
+                                        author, authorFlairs = findAuthor(secondReply, authorFlairs)
+                    if not author is None:
+                        totalPosts += 1
+                        try:
+                            print(f" +1 transcription to {author.name}")
+                            try: transcribers[author.name] += 1
+                            except KeyError:
+                                transcribers[author.name] = 1
+                                authors.append(author.name)
+                        except AttributeError: print(" 1 transcription with no discernable author.")
         
         authorList = []
         
