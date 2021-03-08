@@ -14,7 +14,6 @@ import numpy as np
 """
 
 def graph(config, performance, ticks, hours, label, check):
-    makeTitle(hours, label)
     if config["graphType"] == "barH":
         barChart(performance, ticks, hours, label, "y", check)
     elif config["graphType"] == "barV":
