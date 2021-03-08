@@ -3,12 +3,21 @@ from .funcs import checkTranscriptions, coverage, checkTranscribers#, checkClaim
 from .args import checkArgs
 
 def everything():
-    version = "0.4-beta"
     
-    print(f" Running ToR Transcription Counter version {version}.")
+    version = "0.4-beta"
     
     config = checkArgs()
     seconds = config["period"]*3600
+    
+    print("THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR"
+          "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,"
+          "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE"
+          "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER"
+          "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,"
+          "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE"
+          "SOFTWARE."
+    )
+    print(f" Running ToR Transcription Counter version {version}.")
 
     reddit = praw.Reddit("ttc", user_agent="ttc:v" + version + ":Linux:MurdoMaclachlan")
     
@@ -27,8 +36,6 @@ def everything():
     if config["transcribers"]: checkTranscribers(config, config["period"], reddit, seconds, subsToCheck)
 
 """
-TO BE UPDATED
-
 if args["checkClaim"]:
     
     print(f" Fetching comments from {args['user']}...")
