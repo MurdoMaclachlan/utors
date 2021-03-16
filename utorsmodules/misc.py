@@ -73,9 +73,13 @@ def strToBool(s):
     return s.casefold() in ("yes", "y", "true", "t", "1")
 
 def timeCheck(post, postsWithinTime, reddit, seconds, subToCheck):
-    if subToCheck == "tor_archive" and time() - reddit.submission(reddit.comment(url=post.url).link_id.split('_')[1]).created_utc < seconds: postsWithinTime.append(post.id); return postsWithinTime
+    if subToCheck == "tor_archive" and time() - reddit.submission(reddit.comment(url=post.url).link_id.split('_')[1]).created_utc < seconds:
+        postsWithinTime.append(post.id)
+        return postsWithinTime
     else: return postsWithinTime
 
 def valid(hours, post, seconds):
-    if time() - post.created_utc > seconds: print(f" Passed the {hours} hour mark, stopping analysis."); return False
+    if time() - post.created_utc > seconds:
+        print(f" Passed the {hours} hour mark, stopping analysis.")
+        return False
     else: return True
